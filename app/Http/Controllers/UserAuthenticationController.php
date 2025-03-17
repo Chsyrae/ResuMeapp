@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\LoginVerification;
 use App\Models\User;
 use App\Notifications\OtpNotification;
 use App\Notifications\SignupNotification;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -73,8 +75,31 @@ class UserAuthenticationController extends Controller
                         return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
                     }
                 }
+
                 if(!collect(['admin@resume.app', 'user@resume.app'])->contains($user->email)) {
-                    $user->notify(new OtpNotification($user, strtoupper(Str::random(6))));
+                    $otp = strtoupper(Str::random(6));
+                    
+                    $verifiedLogin = LoginVerification::whereEmail($credentials['email'])->first();
+                    if (!is_null($verifiedLogin)) {
+                        try {
+                            $verifiedLogin->otp    = $otp;
+                            $verifiedLogin->active = 1;
+                            $verifiedLogin->save();
+                        } catch (\Illuminate\Database\QueryException $e) {
+                            return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
+                        }
+                    } else {
+                        try {
+                            $loginVerification         = new LoginVerification;
+                            $loginVerification->email  = $credentials['email'];
+                            $loginVerification->otp    = $otp;
+                            $loginVerification->active = 1;
+                            $loginVerification->save();
+                        } catch (\Illuminate\Database\QueryException $e) {
+                            return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
+                        }
+                    }
+                    $user->notify(new OtpNotification($user, $otp));
                 }
                 return response()->json([
                     'status'  => 'success',  
@@ -85,6 +110,35 @@ class UserAuthenticationController extends Controller
                 return response()->json([
                     'status'  => 'error',
                     'message' => 'Invalid credentials'
+                ]);
+            }
+        } elseif($request->query('type') == 'loginVerification') {
+            \Log::info('KK');
+            $verifiedLogin = LoginVerification::whereEmail($request->email)->first();
+            if(is_null($verifiedLogin)) {
+                return response()->json([
+                    'status'  => 'error',
+                    'message' => 'Invalid Email'
+                ]);
+            } else{
+                if($request->otp != $verifiedLogin->otp) {
+                    return response()->json([
+                        'status'  => 'error',
+                        'message' => 'Invalid OTP'
+                    ]);
+                }
+
+                if (Carbon::parse($verifiedLogin->created_at)->diffInHours(Carbon::now()) > 1) {
+                    return response()->json([
+                        'status'  => 'expired',
+                        'message' => 'OTP Expired'
+                    ]);
+                }
+
+
+                return response()->json([
+                    'status'  => 'success',
+                    'message' => 'Verification Complete'
                 ]);
             }
         }

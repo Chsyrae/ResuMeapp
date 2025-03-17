@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from "vue";
+import router from "@/router";
 import { userAuthStore } from "@/stores/userAuth";
 
 const userAuth = userAuthStore();
@@ -8,6 +9,11 @@ const message  = ref(null)
 const color    = ref(null)
 
 const drawer = ref(false);
+
+const logout = () => {
+	userAuth.authLogout();
+	router.push({ name: 'Home'});
+}
 </script>
 <template>
 	<v-snackbar v-model="snackbar" :color="color" elevation="24">
@@ -56,6 +62,17 @@ const drawer = ref(false);
 						to="login" 
 						variant="flat">
 						Log In
+						<v-icon>mdi-login</v-icon>
+					</v-btn>
+					<v-btn v-if="userAuth.status == 'success'"
+						size="small" 
+						block 
+						elevation="0" 
+						color="primary" 
+						class="text-none"
+						@click="logout" 
+						variant="flat">
+						Log Out
 						<v-icon>mdi-login</v-icon>
 					</v-btn>
 				</div>

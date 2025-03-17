@@ -33,7 +33,8 @@ const userData        = ref({
     last_name:        null,
     email:            null,
     password:         null,
-    confirm_password: null
+    confirm_password: null,
+    otp:              ''
 });
 
 const showSnackBar = (messageBody, messageType) => {
@@ -63,7 +64,8 @@ const createAccount = () => {
     }
 }
 
-const loginForm = ref('loginForm');
+const loginForm             = ref('loginForm');
+const loginVerificationForm = ref('loginVerificationForm');
 const login = () => {
     if(loginForm.value.validate()) {
         loading.value = true;
@@ -76,9 +78,33 @@ const login = () => {
             loading.value = false;
             if(resp.status == 'success') {
                 userAuth.authSuccess(resp);
-                console.log(userAuth.authStatus)
+                view.value = 'loginVerification';
+                //isDialogVisible.value = false;
+                //router.push({ name: 'Builder' });
+            }
+        }).catch(err => {
+            loading.value = false;
+            showSnackBar('An error occurred', 'error');
+        })
+    }
+}
+
+const verifyLogin = () => {
+    if(userData.value.otp.length == 0) {
+        showSnackBar('OTP is required', 'warning');
+    } else {
+        loading.value = true;
+        apiCall({
+            url: '/api/user-account?type=loginVerification',
+            data: userData.value,
+            method: 'POST'
+        }).then(resp => {
+            loading.value = false;
+            if(resp.status == 'success') {
                 isDialogVisible.value = false;
                 router.push({ name: 'Builder' });
+            } else if(resp.status == 'expired' || resp.status == 'error') {
+                showSnackBar(resp.message, 'error');
             }
         }).catch(err => {
             loading.value = false;
@@ -178,6 +204,43 @@ const login = () => {
                                             </div>
                                         </v-col>
                                     </v-row>
+                                </div>
+                            </v-col>
+                        </v-row>
+                    </v-form>
+                </div>
+                <div v-else-if="view=='loginVerification'">
+                    <v-form ref="loginVerificationForm" v-model="isValid" lazy-validation>
+                        <v-row no-gutters class="mt-2 ma-2">
+                            <v-col cols="12" xs="12" md="3">
+                                <div align="center">
+                                    <v-icon size="80" color="primary">mdi-account-key</v-icon>
+                                </div>
+                            </v-col>
+                            <v-spacer></v-spacer>
+                            <v-col cols="12" xs="12" md="6">
+                                <div align="left" class="mx-2">
+                                    One Time Password
+                                </div>
+                                <div class="pa-2">
+                                    <v-text-field class="text_field bg-text" 
+                                        density="compact"
+                                        variant="outlined"
+                                        v-model.trim="userData.otp"
+                                        hide-details>
+                                    </v-text-field>
+                                </div>
+                            </v-col>
+                            <v-col cols="12" xs="12" md="12">
+                                <div align="right">
+                                    <v-btn rounded="lg" 
+                                        elevation="0" 
+                                        color="primary" 
+                                        class="text-none mx-2"
+                                        @click="verifyLogin" 
+                                        :loading="loading">
+                                        Verify <v-icon class="mx-1">mdi-key</v-icon>
+                                    </v-btn>
                                 </div>
                             </v-col>
                         </v-row>
@@ -307,7 +370,6 @@ const login = () => {
                         </div>
                     </v-form>
                 </div>
-
             </v-card>
         </div>
     </v-dialog>
