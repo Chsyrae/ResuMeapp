@@ -33,7 +33,7 @@ class SignupNotification extends Notification
     {
         return (new MailMessage)
             ->subject('Account Created')
-            ->line('Hi ' . $this->user->first_name)
+            ->greeting('Hi ' . $this->user->first_name)
             ->line('Welcome to ResumeApp. We are thrilled to have you and look forward to helping you craft outstanding resumes.');
     }
 

@@ -6,6 +6,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\HtmlString;
 
 class OtpNotification extends Notification
 {
@@ -33,10 +34,10 @@ class OtpNotification extends Notification
     {
         return (new MailMessage)
         ->subject('Account Verification')
-        ->line('Hi ' . $this->user->first_name)
+        ->greeting('Hi ' . $this->user->first_name)
         ->line('For layered security, we require you to verify your identity before signing in.')
         ->line('Please enter the following code on the login page.')
-        ->line($this->otp)
+        ->line(new HtmlString('<strong>' . 'Your OTP Code: ' . $this->otp . '</strong>'))
         ->line('Please note that this code expires in an hour.');
     }
 

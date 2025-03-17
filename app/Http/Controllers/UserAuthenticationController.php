@@ -74,7 +74,7 @@ class UserAuthenticationController extends Controller
                     }
                 }
                 if(!collect(['admin@resume.app', 'user@resume.app'])->contains($user->email)) {
-                    $user->notify(new OtpNotification($user, Str::random(6)));
+                    $user->notify(new OtpNotification($user, strtoupper(Str::random(6))));
                 }
                 return response()->json([
                     'status'  => 'success',  
