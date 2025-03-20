@@ -48,7 +48,7 @@ class UserAuthenticationController extends Controller
                     return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
                 }
     
-                //$user->notify(new SignupNotification($user));
+                $user->notify(new SignupNotification($user));
                 return response()->json([
                     'status'  => 'success',
                     'message' => 'Account created successfully.'

@@ -93,11 +93,13 @@ const skillsArray    = computed(() => skills.value.split("\n").filter(line => li
 const interestsArray = computed(() => interests.value.split("\n").filter(line => line.trim() !== ""));
 
 const templates = ref([
-    { name: 'Template 1', image: '/images/t1.jpeg' },
-    { name: 'Template 2', image: '/images/t2.jpeg' },
-    { name: 'Template 3', image: '/images/t3.jpeg' },
-    { name: 'Template 4', image: '/images/t4.jpeg' },
-    { name: 'Template 5', image: '/images/t5.jpeg' },
+    { name: 'Barbie', image: '/images/Barbie.Fushion.jpeg' },
+    { name: 'Executive', image: '/images/Executive.Classy.jpeg' },
+    { name: 'Suits', image: '/images/Suits.SleekBlack.jpeg' },
+    { name: 'GreyGoose', image: '/images/Grey Goose.jpeg' },
+    { name: 'Minimalistic.Classy', image: '/images/Minimalistic.Classy.png' },
+    {name:'Sunset Multicolour', image: '/images/Sunset Multicolor.jpeg'},
+    { name:'Sakura.Bloom', image: '/images/Sakura.Bloom.png'}
 ]);
 
 const generateResume = () => {
@@ -364,7 +366,7 @@ const generateResume = () => {
                             <v-col cols="12" xs="12" md="4" class="mt-2">
                                 <div class="mx-1">
                                     <div>
-                                        <b>Qualification</b><span class="text-error">*</span>
+                                        <b>Qualification/Course</b><span class="text-error">*</span>
                                     </div>
                                     <v-text-field
                                         v-model="educationExperiences[index].qualification"
@@ -455,7 +457,7 @@ const generateResume = () => {
                 </v-btn>
                 <v-btn
                     depressed
-                    color="green"
+                    color=#8B0000
                     variant="flat" 
                     class="text-none mb-3"  
                     @click="() => changeFormView('next')"
@@ -471,7 +473,7 @@ const generateResume = () => {
             <div align="right">
                 <v-btn
                     depressed
-                    color="green"
+                    color=#8B0000
                     variant="flat" 
                     class="text-none mb-3"  
                     @click="() => changeFormView('previous')"

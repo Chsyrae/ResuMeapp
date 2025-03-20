@@ -25,7 +25,7 @@ const passwordRules = [
     (v) => (v && v.length >= 8)  || "Minimum 8 characters",
     (v) => /(?=.*[A-Z])/.test(v) || "Must have at least one uppercase character",
     (v) => /(?=.*\d)/.test(v)    || "Must have at least one number",
-    (v) => /([!@#$%.])/.test(v)  || "Must have at least one special character [!@#$%.]",
+    (v) => /([_!@#$%.])/.test(v)  || "Must have at least one special character [_!@#$%.]",
 ];
 
 const userData        = ref({
@@ -149,12 +149,12 @@ const verifyLogin = () => {
                                 <div class="mx-2">
                                     <v-row no-gutters>
                                         <v-col cols="12" xs="12" md="12">
-                                            <div align="center" class="mx-1 text-primaryText">
-                                                Sign In To ResumeApp
+                                            <div style="font-family: cursive;" align="center" class="mx-1 text-primaryText">
+                                                Sign In To ResuMé
                                             </div>
                                         </v-col>
                                         <v-col cols="12" xs="12" md="12" class="mt-1">
-                                            <div align="left" class="mx-1 text-caption text-secondaryText">
+                                            <div style="font-family: cursive;" align="left" class="mx-1 text-caption text-secondaryText">
                                                 <b>Email</b>
                                             </div>
                                             <div class="mx-1">
@@ -166,7 +166,7 @@ const verifyLogin = () => {
                                             </div>
                                         </v-col>
                                         <v-col cols="12" xs="12" md="12" class="mt-1">
-                                            <div align="left" class="mx-1 text-caption text-secondaryText">
+                                            <div style="font-family: cursive;" align="left" class="mx-1 text-caption text-secondaryText">
                                                 <b>Password</b>
                                             </div>
                                             <div class="mx-1">

@@ -134,7 +134,6 @@
         <div class="main-content">
             <header>
                 <h1>{{ $personalInfo['fname'] }} {{ $personalInfo['otherNames'] }}</h1>
-                <p class="title">N/A</p>
             </header>
 
             <section class="summary">
