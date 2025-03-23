@@ -77,8 +77,14 @@ const logout = () => {
 					</v-btn>
 				</div>
 				<v-spacer class="hidden-md-and-up"></v-spacer>
-				<v-btn size="small" elevation="0" color="primary" class="text-none mr-2 hidden-md-and-up"
-					@click="system.changeLoaderStatus()" variant="flat">
+				<v-btn 
+					to="login"
+					size="small" 
+					variant="flat"
+					elevation="0" 
+					color="primary" 
+					class="text-none mr-2 hidden-md-and-up"
+				>
 					Log In
 					<v-icon class="ml-2">mdi-login</v-icon>
 				</v-btn>

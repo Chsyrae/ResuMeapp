@@ -82,29 +82,31 @@ class UserAuthenticationController extends Controller
                     $verifiedLogin = LoginVerification::whereEmail($credentials['email'])->first();
                     if (!is_null($verifiedLogin)) {
                         try {
-                            $verifiedLogin->otp    = $otp;
-                            $verifiedLogin->active = 1;
+                            $verifiedLogin->otp        = $otp;
+                            $verifiedLogin->active     = 1;
+                            $verifiedLogin->created_at = now();
                             $verifiedLogin->save();
                         } catch (\Illuminate\Database\QueryException $e) {
                             return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
                         }
                     } else {
                         try {
-                            $loginVerification         = new LoginVerification;
-                            $loginVerification->email  = $credentials['email'];
-                            $loginVerification->otp    = $otp;
-                            $loginVerification->active = 1;
+                            $loginVerification             = new LoginVerification;
+                            $loginVerification->email      = $credentials['email'];
+                            $loginVerification->otp        = $otp;
+                            $loginVerification->active     = 1;
                             $loginVerification->save();
                         } catch (\Illuminate\Database\QueryException $e) {
                             return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
                         }
                     }
-                    $user->notify(new OtpNotification($user, $otp));
+                    //$user->notify(new OtpNotification($user, $otp));
                 }
                 return response()->json([
                     'status'  => 'success',  
                     'message' => 'Login successful',
-                    'token'   => $user->createToken('Personal Access Token',['user'])->plainTextToken
+                    'user'    => $user->append('ability'),
+                    'token'   => $user->createToken('Personal Access Token',['user'])->accessToken
                 ]);
             } else {
                 return response()->json([
@@ -113,7 +115,7 @@ class UserAuthenticationController extends Controller
                 ]);
             }
         } elseif($request->query('type') == 'loginVerification') {
-            \Log::info('KK');
+
             $verifiedLogin = LoginVerification::whereEmail($request->email)->first();
             if(is_null($verifiedLogin)) {
                 return response()->json([
@@ -129,9 +131,11 @@ class UserAuthenticationController extends Controller
                 }
 
                 if (Carbon::parse($verifiedLogin->created_at)->diffInHours(Carbon::now()) > 1) {
+                    $user = User::whereEmail($request->email)->first();
                     return response()->json([
                         'status'  => 'expired',
-                        'message' => 'OTP Expired'
+                        'message' => 'OTP Expired',
+                        // 'user'    => $user->append('ability'),
                     ]);
                 }
 

@@ -114,7 +114,7 @@
             <h2>Contact</h2>
             <p>📍{{ $personalInfo['physicalAddress'] }}</p>
             <p>✉ {{ $personalInfo['email'] }}</p>
-            <p>☎ {{ $personalInfo['contact'] }}</p>
+            <p>☎ {{ $personalInfo['phoneNo'] }}</p>
 
             <h2>Skills</h2>
             <ul>
@@ -133,7 +133,7 @@
 
         <div class="main-content">
             <header>
-                <h1>{{ $personalInfo['fname'] }} {{ $personalInfo['otherNames'] }}</h1>
+                <h1>{{ $personalInfo['fname'] }} {{ $personalInfo['lname'] }}</h1>
                 <p class="title">N/A</p>
             </header>
 
@@ -151,7 +151,7 @@
                             {{ $workExperience['organization'] }} | {{ $workExperience['dateJoined'] }} - {{ $workExperience['dateLeft'] ? $workExperience['dateLeft'] : 'Present' }}
                         </p>
                         <ul>
-                            @foreach ($workExperiences[0]['achievementsResponsibilities'] as $achievementResponsibility)
+                            @foreach ($workExperiences[$loop->index]['achievementsResponsibilities'] as $achievementResponsibility)
                                 <li>{{ $achievementResponsibility }}</li>
                             @endforeach
                         </ul>

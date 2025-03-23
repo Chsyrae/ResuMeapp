@@ -11,14 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('user_details', function (Blueprint $table) {
+        Schema::create('templates', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
-            $table->string('full_name');
-            $table->string('email');
-            $table->string('phone_number');
-            $table->string('address')->nullable();
+            $table->boolean('status')->default(true);
+            $table->string('name');
+            $table->string('url');
+            $table->string('original_name');
+            $table->unsignedBigInteger('uploaded_by');
             $table->timestamps();
+
+            $table->foreign('uploaded_by')->references('id')->on('users');
         });
     }
 
@@ -27,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('user_details');
+        Schema::dropIfExists('templates');
     }
 };

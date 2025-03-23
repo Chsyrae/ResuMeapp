@@ -1,7 +1,10 @@
 <?php
 
+use App\Http\Controllers\AgentController;
 use App\Http\Controllers\ResumeController;
+use App\Http\Controllers\TemplateController;
 use App\Http\Controllers\UserAuthenticationController;
+use App\Http\Controllers\UserController;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -18,13 +21,13 @@ use App\Http\Controllers\UserDetailsController;
 |
 */
 
-// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
 
-// Route::apiResource('user_details', UserDetailsController::class);
-
-// Route::get('/user_details/create', [App\Http\Controllers\UserDetailsController::class, 'create'])->name('user_details.create');
-
-Route::apiResource('resume-generator', ResumeController::class);
+// Route::apiResource('resume-generator', ResumeController::class);
 Route::apiResource('user-account', UserAuthenticationController::class);
+
+Route::middleware('auth:api')->group(function () {
+    Route::apiResource('user', UserController::class);
+    Route::apiResource('template', TemplateController::class);
+    Route::apiResource('resume-generator', ResumeController::class);
+    Route::apiResource('test-bot', AgentController::class);
+});

@@ -78,7 +78,16 @@ const login = () => {
             loading.value = false;
             if(resp.status == 'success') {
                 userAuth.authSuccess(resp);
-                view.value = 'loginVerification';
+                console.log(userAuth.user.ability)
+                isDialogVisible.value = false;
+                setTimeout(() => {
+                    if (userAuth.user.ability.length > 0) {
+                        router.push({ name: "User" });
+                    } else {
+                        router.push({ name: "Builder" });
+                    }
+                }, 100); 
+                //view.value = 'loginVerification';
                 //isDialogVisible.value = false;
                 //router.push({ name: 'Builder' });
             }
@@ -209,7 +218,7 @@ const verifyLogin = () => {
                         </v-row>
                     </v-form>
                 </div>
-                <div v-else-if="view=='loginVerification'">
+                <!-- <div v-else-if="view=='loginVerification'">
                     <v-form ref="loginVerificationForm" v-model="isValid" lazy-validation>
                         <v-row no-gutters class="mt-2 ma-2">
                             <v-col cols="12" xs="12" md="3">
@@ -245,7 +254,7 @@ const verifyLogin = () => {
                             </v-col>
                         </v-row>
                     </v-form>
-                </div>
+                </div> -->
                 <div v-else-if="view=='create'">
                     <v-form ref="accountCreationForm" v-model="isValid" lazy-validation>
                         <div v-if="creationStage == 'default'">
