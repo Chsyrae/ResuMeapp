@@ -27,7 +27,7 @@ class ResumeController extends Controller
         $skills               = $request['skills'];
         $interests            = $request['interests'];
 
-        $pdf                  = \Pdf::loadView('templates.emily', compact('personalInfo', 'workExperiences', 'educationExperiences', 'skills', 'interests'));
+        $pdf                  = \Pdf::loadView('templates.Executive', compact('personalInfo', 'workExperiences', 'educationExperiences', 'skills', 'interests'));
         $fileName             = $personalInfo['fname'] . ' ' . $personalInfo['otherNames'];
         return response($pdf->stream(), 200, [
             'Content-Disposition' => "attachment; filename={$fileName}"
