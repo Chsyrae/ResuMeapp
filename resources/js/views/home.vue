@@ -18,7 +18,7 @@ const launchBuilder = () => {
                 <v-row no-gutters>
                     <v-col cols="12" >
                         <div align="center" class="text-uppercase mt-n2 mb-3">
-                            <b>Welcome to ResumeApp</b>
+                            <b>Welcome to ResuMe</b>
                         </div>
                     </v-col>
                     <v-col cols="12" >
