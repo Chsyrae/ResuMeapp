@@ -5,6 +5,7 @@ import UnAuthNavbar from './components/navbar.vue';
 import AuthNavbar from './components/authNavbar.vue';
 import ability from "./services/ability";
 
+
 const authStore = userAuthStore();
 
 const loadAbilities  = () => {

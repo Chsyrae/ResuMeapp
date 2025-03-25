@@ -19,6 +19,7 @@ const inputRules = [
 const emailRules = [
 	(v) => !!v || "E-mail is Required",
 	(v) => /.+@.+/.test(v) || "E-mail must be valid",
+     (v) => /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(ac\.ke|edu)$/.test(v) || "E-mail must be a valid student email",
 ];
 const passwordRules = [
     (v) => !!v                   || "Password is required",
@@ -87,9 +88,9 @@ const login = () => {
                         router.push({ name: "Builder" });
                     }
                 }, 100); 
-                //view.value = 'loginVerification';
-                //isDialogVisible.value = false;
-                //router.push({ name: 'Builder' });
+                view.value = 'loginVerification';
+                isDialogVisible.value = false;
+                router.push({ name: 'Builder' });
             }
         }).catch(err => {
             loading.value = false;
@@ -158,8 +159,8 @@ const verifyLogin = () => {
                                 <div class="mx-2">
                                     <v-row no-gutters>
                                         <v-col cols="12" xs="12" md="12">
-                                            <div align="center" class="mx-1 text-primaryText">
-                                                Sign In To ResumeApp
+                                            <div style="font-family: cursive;" align="center" class="mx-1 text-primaryText">
+                                                Sign In To ResuMe
                                             </div>
                                         </v-col>
                                         <v-col cols="12" xs="12" md="12" class="mt-1">
@@ -218,7 +219,7 @@ const verifyLogin = () => {
                         </v-row>
                     </v-form>
                 </div>
-                <!-- <div v-else-if="view=='loginVerification'">
+                <div v-else-if="view=='loginVerification'">
                     <v-form ref="loginVerificationForm" v-model="isValid" lazy-validation>
                         <v-row no-gutters class="mt-2 ma-2">
                             <v-col cols="12" xs="12" md="3">
@@ -254,7 +255,7 @@ const verifyLogin = () => {
                             </v-col>
                         </v-row>
                     </v-form>
-                </div> -->
+                </div>
                 <div v-else-if="view=='create'">
                     <v-form ref="accountCreationForm" v-model="isValid" lazy-validation>
                         <div v-if="creationStage == 'default'">

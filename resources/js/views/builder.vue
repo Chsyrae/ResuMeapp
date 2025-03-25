@@ -6,6 +6,7 @@ import router from "@/router";
 import apiCall from '@/utils/api';
 import axios from 'axios';
 
+
 const resumeTemplate = templateStore();
 const userAuth       = userAuthStore();
 const formView       = ref('one');
@@ -383,7 +384,7 @@ const generateAdvice = () => {
                             <v-spacer></v-spacer>
                             <v-col cols="12" xs="12" md="4">
                                 <div align="right">
-                                    <v-spacer></v-spacer>
+                                    <v-spacer></v-spacer>  hhhh
                                     <v-btn
                                         depressed
                                         color="error"
@@ -447,7 +448,7 @@ const generateAdvice = () => {
                             <v-col cols="12" xs="12" md="4" class="mt-2">
                                 <div class="mx-1">
                                     <div>
-                                        <b>Date Left </b><span class="text-caption"><i>- Optional</i></span>
+                                        <b>Estimated /Date Left </b><span class="text-caption"><i>- Optional</i></span>
                                     </div>
                                     <v-text-field
                                         v-model="educationExperiences[index].dateLeft"
@@ -549,7 +550,7 @@ const generateAdvice = () => {
                 </v-btn>
                 <v-btn
                     depressed
-                    color="green"
+                    color=#8B0000
                     variant="flat" 
                     class="text-none mb-3"  
                     @click="() => changeFormView('next')"
@@ -561,11 +562,11 @@ const generateAdvice = () => {
             </v-card-actions>
         </v-card>
         <div v-if="formView == 'five'">
-            <div class="text-h5">Select Your Resume Template</div>
+            <div style="font-family: cursive;" class="text-h5">Select Your Resume Template</div>
             <div align="left">
                 <v-btn
                     depressed
-                    color="green"
+                    color=#8B0000
                     variant="flat" 
                     class="text-none mt-2"  
                     @click="() => changeFormView('previous')"
@@ -573,6 +574,20 @@ const generateAdvice = () => {
                     Back
                     <v-icon right class="pa-3"> mdi-keyboard-backspace </v-icon>
                 </v-btn>
+
+              
+                <v-select
+              clearable
+            label="Where to apply for Jobs/Internships"
+            :items="[
+                'CampusBiz Platform:Internships,Entry Level Jobs and Scholarships',
+                'KenyaJobs:Job listings in Kenya',
+                'ReliefWeb:International Jobs and Internships',
+                'Public Service Commission :Internship Program',
+                'Fuzu:Jobs and Internships',
+                'Roots: For wildlife and conservation internships',]" 
+           variant="solo"
+            ></v-select>      
             </div>
             
             <v-row no-gutters>

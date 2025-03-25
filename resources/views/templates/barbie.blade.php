@@ -112,9 +112,9 @@
     <div class="resume">
         <div class="sidebar">
             <h2>Contact</h2>
-            <p>📍{{ $personalInfo['physicalAddress'] }}</p>
-            <p>✉ {{ $personalInfo['email'] }}</p>
-            <p>☎ {{ $personalInfo['phoneNo'] }}</p>
+            <p>{{ $personalInfo['physicalAddress'] }}</p>
+            <p>{{ $personalInfo['email'] }}</p>
+            <p>{{ $personalInfo['phoneNo'] }}</p>
 
             <h2>Skills</h2>
             <ul>
@@ -134,7 +134,7 @@
         <div class="main-content">
             <header>
                 <h1>{{ $personalInfo['fname'] }} {{ $personalInfo['lname'] }}</h1>
-                <p class="title">N/A</p>
+                
             </header>
 
             <section class="summary">
