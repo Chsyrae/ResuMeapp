@@ -50,7 +50,7 @@ const createAccount = () => {
     if(accountCreationForm.value.validate()) {
         loading.value = true;
         apiCall({
-            url: '/api/user-account?type=signUp',
+            url: '/api/user-account?type=signUp',//isDialogVisible.value = false;
             data: userData.value,
             method: 'POST'
         }).then(resp => {
