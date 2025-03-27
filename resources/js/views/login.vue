@@ -19,7 +19,7 @@ const inputRules = [
 const emailRules = [
 	(v) => !!v || "E-mail is Required",
 	(v) => /.+@.+/.test(v) || "E-mail must be valid",
-     (v) => /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(ac\.ke|edu)$/.test(v) || "E-mail must be a valid student email",
+    //  (v) => /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(ac\.ke|edu)$/.test(v) || "E-mail must be a valid student email",
 ];
 const passwordRules = [
     (v) => !!v                   || "Password is required",

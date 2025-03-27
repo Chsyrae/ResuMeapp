@@ -133,7 +133,7 @@
 
         <div class="main-content">
         <header>
-                <h1>{{ $personalInfo['fname'] }} {{ $personalInfo['otherNames'] }}</h1>
+                <h1>{{ $personalInfo['fname'] }} {{ $personalInfo['lname'] }}</h1>
             </header>
 
             <section class="summary">

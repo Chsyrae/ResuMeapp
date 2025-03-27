@@ -89,7 +89,7 @@
 
             <div class="main-content">
                 <header>
-                    <h1 style="font-family: cursive;">{{ $personalInfo['fname'] }} {{ $personalInfo['otherNames'] }}</h1>
+                    <h1 style="font-family: cursive;">{{ $personalInfo['fname'] }} {{ $personalInfo['lname'] }}</h1>
                 </header>
 
                 <div class="contact-info">
