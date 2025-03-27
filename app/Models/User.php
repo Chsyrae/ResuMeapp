@@ -9,10 +9,11 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens as PassportHasApiTokens;
 use Laravel\Passport\HasApiTokens;;
 use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasRoles, HasFactory, Notifiable;
+    use HasApiTokens, HasRoles, HasFactory, Notifiable, SoftDeletes;
 
     protected $guard_name = 'api';
 
@@ -35,7 +36,6 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'active',
-        'deleted_at',
         'remember_token',
     ];
 
@@ -65,7 +65,7 @@ class User extends Authenticatable
     protected function status(): Attribute
     {
         return Attribute::make(
-            get: fn (mixed $value) => $value == 0 ? 'Inactive' : 'Active'
+            get: fn (mixed $value, array $attributes) => $attributes['active'] == 0 ? 'Inactive' : 'Active'
         );
     }
 

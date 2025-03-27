@@ -18,7 +18,7 @@ const ifAuthenticated = (to, from, next) => {
       if (!ability.can(to.meta.permission)) return next(false);
     }
     next();
-  };
+};
 const router  = createRouter({
     history: createWebHashHistory(),
     routes: [

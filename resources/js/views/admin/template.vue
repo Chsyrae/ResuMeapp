@@ -71,6 +71,7 @@ const viewTemplate = (template) =>  {
 
 
 const getTemplates = () => {
+    if(resumeTemplate.templateLoader == false) resumeTemplate.changeLoaderStatus();
     apiCall({
         url: '/api/template?type=getTemplates',
         method: 'GET'
@@ -84,12 +85,13 @@ const getTemplates = () => {
 getTemplates()
 
 const changePage = () => {
+    if(resumeTemplate.publicTemplateLoader == false) resumeTemplate.changePublicLoaderStatus();
     apiCall({
         url: `/api/template?type=getTemplates&page=${resumeTemplate.templatePagination.current_page}`,
         method: 'GET'
     }).then(resp => {
         resumeTemplate.setTemplates(resp);
-        resumeTemplate.changeLoaderStatus();
+        resumeTemplate.changePublicLoaderStatus();
     }).catch(err => {
         showSnackBar('An error occurred', 'error');
     })
@@ -100,18 +102,6 @@ const templateLength = computed(() => {
         resumeTemplate.templatePagination.total / resumeTemplate.templatePagination.per_page
     );
 });
-
-function testBot() {
-    apiCall({
-        url: '/api/test-bot',
-        method: 'GET'
-    }).then(resp => {
-        console.log(resp)
-    }).catch(err => {
-        console.log(err)
-    })
-}
-//testBot()
 </script>
 <template>
     <v-snackbar v-model="snackbar" :color="color" elevation="24">
@@ -167,11 +157,14 @@ function testBot() {
                     </v-col>
                 </v-row>
                 <div class="mx-5">
-                    <v-progress-linear v-if="resumeTemplate.templateLoader" height="1" color="primary"
+                    <v-progress-linear 
+                        v-if="resumeTemplate.templateLoader" 
+                        height="1" 
+                        color="primary" 
                         indeterminate>
                     </v-progress-linear>
                 </div>
-                <v-divider class="mx-5 mt-2"></v-divider>
+                <v-divider class="mx-5"></v-divider>
                 <div v-if="resumeTemplate.templates.length == 0">
                     <v-card elevation="0">
                         <v-row no-gutters>

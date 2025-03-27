@@ -31,6 +31,6 @@ class RolePermissionsSeeder extends Seeder
         $role = Role::create(['name' => 'System Admin', 'guard_name' => 'api']);
         $role->givePermissionTo(Permission::all());
 
-        $role = Role::create(['name' => 'Casual User', 'guard_name' => 'api']);
+        $role = Role::create(['name' => 'User', 'guard_name' => 'api']);
     }
 }

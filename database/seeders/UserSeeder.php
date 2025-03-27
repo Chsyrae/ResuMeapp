@@ -33,7 +33,7 @@ class UserSeeder extends Seeder
         $user->password     = Hash::make('Qwerty1.');
         $user->active       = 1;
         $user->save();
-        $role               = Role::whereName('Casual User')->first();
+        $role               = Role::whereName('User')->first();
         $user->assignRole($role->id);
     }
 }

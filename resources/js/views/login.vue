@@ -78,15 +78,12 @@ const login = () => {
             loading.value = false;
             if(resp.status == 'success') {
                 userAuth.authSuccess(resp);
-                console.log(userAuth.user.ability)
                 isDialogVisible.value = false;
-                setTimeout(() => {
-                    if (userAuth.user.ability.length > 0) {
-                        router.push({ name: "User" });
-                    } else {
-                        router.push({ name: "Builder" });
-                    }
-                }, 100); 
+                if (userAuth.user.ability.length > 0) {
+                    router.push({ name: "User" });
+                } else {
+                    router.push({ name: "Builder" });
+                }
                 //view.value = 'loginVerification';
                 //isDialogVisible.value = false;
                 //router.push({ name: 'Builder' });

@@ -1,9 +1,12 @@
 <script setup>
 import { ref, computed } from "vue";
 import { userStore } from "@/stores/user";
+import { userAuthStore } from "@/stores/userAuth";
 import apiCall from '@/utils/api';
+import ConfirmDialog from '@/components/confirmDialog.vue';
 
 const user         = userStore();
+const userAuth     = userAuthStore();
 const view         = ref('default');
 const snackbar     = ref(false);
 const message      = ref(null);
@@ -16,7 +19,21 @@ const showSnackBar = (messageBody, messageType) => {
     snackbar.value = true;
 }
 
+const roles = ref({});
+const getRoles = () => {
+    apiCall({
+        url: '/api/user?type=getRoles',
+        method: 'GET'
+    }).then(resp => {
+        roles.value = resp;
+    }).catch(err => {
+        showSnackBar('An error occurred', 'error');
+    }) 
+}
+getRoles();
+
 const getUsers = () => {
+    if(user.userLoader == false) user.changeLoaderStatus();
     apiCall({
         url: '/api/user?type=getUsers',
         method: 'GET'
@@ -30,6 +47,7 @@ const getUsers = () => {
 getUsers()
 
 const changePage = () => {
+    if(user.userLoader == false) user.changeLoaderStatus();
     apiCall({
         url: `/api/user?type=getUsers&page=${user.userPagination.current_page}`,
         method: 'GET'
@@ -40,6 +58,101 @@ const changePage = () => {
         showSnackBar('An error occurred', 'error');
     })
 }
+
+const inputRules = [
+    (v) => !!v || "Input is Required",
+];
+const emailRules = [
+	(v) => !!v || "E-mail is Required",
+	(v) => /.+@.+/.test(v) || "E-mail must be valid",
+];
+const passwordRules = [
+    (v) => !!v                   || "Password is required",
+    (v) => (v && v.length >= 8)  || "Minimum 8 characters",
+    (v) => /(?=.*[A-Z])/.test(v) || "Must have at least one uppercase character",
+    (v) => /(?=.*\d)/.test(v)    || "Must have at least one number",
+    (v) => /([!@#$%.])/.test(v)  || "Must have at least one special character [!@#$%.]",
+];
+const isValid          = ref(true);
+const createForm       = ref('createForm');
+const createFormDialog = ref(false);
+const newUser    = ref({
+    id:       null,
+    fname:    null,
+    lname:    null,
+    email:    null,
+    roleId:   null,
+    password: null
+});
+const createUser = () => {
+    apiCall({
+        url: `/api/user?type=createUser&page=${user.userPagination.current_page}`,
+        method: 'POST',
+        data: newUser.value
+    }).then(resp => {
+        user.setUsers(resp);
+        user.changeLoaderStatus();
+        createFormDialog.value = false;
+    }).catch(err => {
+        showSnackBar('An error occurred', 'error');
+    })
+}
+
+const openEditDialog = (item) => {
+    console.log(item)
+    newUser.value.id       = item.id;
+    newUser.value.fname    = item.first_name;
+    newUser.value.lname    = item.last_name;
+    newUser.value.email    = item.email;
+    newUser.value.roleId   = item.roles[0];
+    newUser.value.password = item.password;
+    createFormDialog.value = true;
+}
+
+const closeEditDialog = () => {
+    newUser.value = {};
+    createFormDialog.value = false;
+}
+const editUser = (user) => {
+    apiCall({
+        url: `/api/user?type=editUser&page=${user.userPagination.current_page}`,
+        method: 'POST',
+        data: newUser.value
+    }).then(resp => {
+        user.setUsers(resp);
+        user.changeLoaderStatus();
+        createFormDialog.value = false;
+        newUser.value = {};
+    }).catch(err => {
+        showSnackBar('An error occurred', 'error');
+    })
+}
+
+const deletionDialog     = ref(false);
+const selectedUser       = ref({});
+const selectedUserIndex  = ref(null);
+const openDeletionDialog = (user, userIndex) => {
+    selectedUser.value      = user;
+    selectedUserIndex.value = userIndex;
+    deletionDialog.value    = true;
+}
+const deleteUser = () => {
+    deletionDialog.value = false;
+    loading.value        = true;
+    apiCall({ 
+        url: `/api/user/${selectedUser.value.id}`, 
+        method: "DELETE" 
+    }).then((resp) => {
+            loading.value       = false;
+            showSnackBar(resp.message, resp.status)
+            changePage();
+        })
+        .catch((error) => {
+            loading.value = false;
+            showSnackBar('An error occurred', 'error');
+        });
+}
+
 
 const userLength = computed(() => {
     return Math.ceil(
@@ -79,7 +192,7 @@ const userLength = computed(() => {
                     </v-col>
                     <v-col cols="12" xs="12" md="2">
                         <div class="pa-1">
-                            <v-btn rounded="xl" class="text-none" color="primary" elevation="0" block @click="changeView('create')"
+                            <v-btn rounded="xl" class="text-none" color="primary" elevation="0" block @click="createFormDialog = true"
                                 v-if="$can('user_create')">
                                 Add User
                                 <v-icon right> mdi-plus-circle-outline </v-icon>
@@ -88,10 +201,14 @@ const userLength = computed(() => {
                     </v-col>
                 </v-row>
                 <div class="mx-5">
-                    <v-progress-linear v-if="user.userLoader" height="1" color="primary"
-                        indeterminate></v-progress-linear>
+                    <v-progress-linear 
+                        v-if="user.userLoader" 
+                        height="1" 
+                        color="primary" 
+                        indeterminate>
+                    </v-progress-linear>
                 </div>
-                <v-divider class="mx-5 mt-2"></v-divider>
+                <v-divider class="mx-5"></v-divider>
                 <div v-if="user.users.length == 0">
                     <v-card elevation="0">
                         <v-row no-gutters>
@@ -148,20 +265,6 @@ const userLength = computed(() => {
                                         <td>{{ $filters.formattedDateTime(item.created_at) }}</td>
                                         <td>
                                             <div align="right" class="my-2">
-                                                <v-tooltip text="View" location="top" v-if="$can('user_view')">
-                                                    <template v-slot:activator="{ props }">
-                                                        <v-btn 
-                                                            icon
-                                                            size="small" 
-                                                            elevation="0"  
-                                                            v-bind="props"
-                                                            variant="tonal" 
-                                                            class="button mr-1" 
-                                                            @click="showUser(item)">
-                                                            <v-icon small> mdi-eye </v-icon>
-                                                        </v-btn>
-                                                    </template>
-                                                </v-tooltip>
                                                 <v-tooltip text="Edit" location="top" v-if="$can('user_edit')">
                                                     <template v-slot:activator="{ on, props }">
                                                         <v-btn 
@@ -171,12 +274,12 @@ const userLength = computed(() => {
                                                             v-bind="props"
                                                             variant="tonal"
                                                             class="button mr-1 text-success" 
-                                                            @click="editUser(item)" >
+                                                            :loading="selectedUser.id == item.id ? true:false"
+                                                            @click="openEditDialog(item)" >
                                                             <v-icon small> mdi-pencil </v-icon>
                                                         </v-btn>
                                                     </template>
                                                 </v-tooltip>
-
                                                 <v-tooltip text="Delete" location="top" v-if="$can('user_archive')">
                                                     <template v-slot:activator="{ props }">
                                                         <v-btn icon
@@ -185,12 +288,20 @@ const userLength = computed(() => {
                                                             v-bind="props"
                                                             variant="tonal"
                                                             class="button mr-1 text-error"
-                                                            @click="deletionDialog = true"
-                                                            :loading="loading && userIndex == item.id">
+                                                            @click="openDeletionDialog(item, index)"
+                                                            :disabled="(item.deleted_at == null ? false : true) || (item.id == userAuth.user.id ? true : false)"
+                                                            :loading="loading && selectedUser.id == item.id">
                                                             <v-icon small> mdi-delete </v-icon>
                                                         </v-btn>
                                                     </template>
                                                 </v-tooltip>
+                                                <ConfirmDialog
+                                                    :title="'Confirm Action'"
+                                                    :content="`Do You Want to Delete User #${selectedUserIndex + 1}?`"
+                                                    :model-value="deletionDialog"
+                                                    @update:modelValue="value => deletionDialog = value"
+                                                    @confirm="deleteUser()"
+                                                />
                                             </div>
                                         </td>
                                     </tr>
@@ -218,11 +329,18 @@ const userLength = computed(() => {
                                                                 size="small"
                                                                 elevation="0"
                                                                 variant="tonal" 
-                                                                class="text-red" 
-                                                                :loading="loading && userIndex == user.id"  
-                                                                @click="deletionDialog = true">
-                                                                <v-icon> mdi-delete </v-icon>
+                                                                class="text-red"  
+                                                                @click="openDeletionDialog(item, index)"
+                                                                :disabled="(userRecord.deleted_at == null ? false : true) || (userRecord.id == userAuth.user.id ? true : false)"
+                                                                :loading="loading && selectedUser.id == item.id">                                                                <v-icon> mdi-delete </v-icon>
                                                             </v-btn>
+                                                            <ConfirmDialog
+                                                                :title="'Confirm Action'"
+                                                                :content="`Do You Want to Delete User #${selectedUserIndex + 1}?`"
+                                                                :model-value="deletionDialog"
+                                                                @update:modelValue="value => deletionDialog = value"
+                                                                @confirm="deleteUser()"
+                                                            />
                                                         </div>
                                                     </v-col>
                                                 </v-row>
@@ -233,12 +351,25 @@ const userLength = computed(() => {
                                                         <div><b>Email:</b></div>
                                                     </v-col>
                                                     <v-col xs="8" md="8">
-                                                        {{ userRecord.email }}
+                                                        <div>{{ userRecord.email }}</div>
                                                     </v-col>
                                                 </v-row>
                                                 <v-row no-gutters>
                                                     <v-col xs="4" md="4">
-                                                        <b>Status:</b>
+                                                        <div><b>Role:</b></div>
+                                                    </v-col>
+                                                    <v-col xs="8" md="8">
+                                                        <div v-if="userRecord.roles.length > 0">
+                                                            <div v-for="item in userRecord.roles" :key="item.id">
+                                                                {{ item.name }}
+                                                            </div>
+                                                        </div>
+                                                        <div v-else>N/A</div>
+                                                    </v-col>
+                                                </v-row>
+                                                <v-row no-gutters>
+                                                    <v-col xs="4" md="4">
+                                                        <div><b>Status:</b></div>
                                                     </v-col>
                                                     <v-col xs="8" md="8">
                                                         <div>{{ userRecord.status }}</div>
@@ -255,6 +386,7 @@ const userLength = computed(() => {
                                             </v-col>
                                         </v-row>
                                     </v-card>
+                                    <v-divider></v-divider>
                                 </v-col>
                             </template>
                         </v-row>
@@ -281,5 +413,113 @@ const userLength = computed(() => {
                 </div>
             </v-card>
         </div>
+        <v-dialog v-model="createFormDialog" persistent max-width="600">
+            <v-form ref="createForm" v-model="isValid" lazy-validation>
+                <v-card class="card rounded" elevation="0">
+                    <v-card-title classs="text-primary">
+                        <v-row no-gutters>
+                            <v-col cols="12" xs="12" md="11">
+                                <div align="left">
+                                    {{ newUser.id == null ? 'Create User' : 'Edit User' }}
+                                </div>
+                            </v-col>
+                            <v-col cols="1">
+                                <div class="mx-8">
+                                    <v-btn
+                                        depressed
+                                        size="md"
+                                        color="error"
+                                        variant="tonal" 
+                                        @click="closeEditDialog">
+                                        <v-icon right> mdi-close</v-icon>
+                                    </v-btn>
+                                </div>
+                            </v-col>
+                        </v-row>
+                    </v-card-title>
+                    <v-divider></v-divider>
+                    <v-card-text>
+                        <v-row dense>
+                            <v-col cols="12" md="6">
+                                <v-row no-gutters>
+                                    <v-col cols="12" xs="12" md="12">
+                                        <div>First Name</div>
+                                    </v-col>
+                                    <v-col cols="12" xs="12" md="12">
+                                        <v-text-field
+                                            v-model="newUser.fname"
+                                            :rules="inputRules"
+                                            density="compact">
+                                        </v-text-field>
+                                    </v-col>
+                                </v-row>
+                            </v-col>
+                            <v-col cols="12" xs="12" md="6">
+                                <v-row no-gutters>
+                                    <v-col cols="12" xs="12" md="12">
+                                        <div>Last Name</div>
+                                    </v-col>
+                                    <v-col cols="12" xs="12" md="12">
+                                        <v-text-field
+                                            v-model="newUser.lname"
+                                            :rules="inputRules"
+                                            density="compact">
+                                        </v-text-field>
+                                    </v-col>
+                                </v-row>
+                            </v-col>
+                            <v-col cols="12" xs="12" md="6">
+                                <v-row no-gutters>
+                                    <v-col cols="12" xs="12" md="12">
+                                        <div>Email</div>
+                                    </v-col>
+                                    <v-col cols="12" xs="12" md="12">
+                                        <v-text-field
+                                            v-model="newUser.email"
+                                            :rules="emailRules"
+                                            density="compact">
+                                        </v-text-field>
+                                    </v-col>
+                                </v-row>
+                            </v-col>
+                            <v-col cols="12" xs="12" md="6">
+                                <v-row no-gutters>
+                                    <v-col cols="12" xs="12" md="12">
+                                        <div>Role</div>
+                                    </v-col>
+                                    <v-col cols="12" xs="12" md="12">
+                                        <v-select 
+                                            :items="roles"
+                                            item-value="id"
+                                            item-title="name"
+                                            :rules="inputRules"
+                                            v-model="newUser.roleId"
+                                            density="compact">
+                                        </v-select>
+                                    </v-col>
+                                </v-row>
+                            </v-col>
+                        </v-row>
+                    </v-card-text>
+                    <v-card-actions class="mt-n6">
+                        <v-btn
+                            class="text-none mx-1"
+                            color="red-lighten-1"
+                            text="Cancel"
+                            variant="flat"
+                            @click="closeEditDialog">
+                        </v-btn>
+                        <v-btn
+                            :disabled="!isValid"
+                            class="text-none mx-4"
+                            color="primary"
+                            text="Save"
+                            variant="flat"
+                            @click="newUser.id == null ? createUser : editUser">
+                        </v-btn>
+                    </v-card-actions>
+                </v-card>    
+            </v-form>
+        </v-dialog>
     </v-container>
 </template>

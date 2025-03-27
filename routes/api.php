@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\AgentController;
 use App\Http\Controllers\ResumeController;
 use App\Http\Controllers\TemplateController;
 use App\Http\Controllers\UserAuthenticationController;
@@ -29,5 +28,4 @@ Route::middleware('auth:api')->group(function () {
     Route::apiResource('user', UserController::class);
     Route::apiResource('template', TemplateController::class);
     Route::apiResource('resume-generator', ResumeController::class);
-    Route::apiResource('test-bot', AgentController::class);
 });
