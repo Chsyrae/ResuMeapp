@@ -549,7 +549,7 @@ const generateAdvice = () => {
                 </v-btn>
                 <v-btn
                     depressed
-                    color="green"
+                    color=#8B0000
                     variant="flat" 
                     class="text-none mb-3"  
                     @click="() => changeFormView('next')"
@@ -565,7 +565,7 @@ const generateAdvice = () => {
             <div align="left">
                 <v-btn
                     depressed
-                    color="green"
+                    color=#8B0000
                     variant="flat" 
                     class="text-none mt-2"  
                     @click="() => changeFormView('previous')"

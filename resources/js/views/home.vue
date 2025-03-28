@@ -18,17 +18,19 @@ const launchBuilder = () => {
                 <v-row no-gutters>
                     <v-col cols="12" >
                         <div align="center" class="text-uppercase mt-n2 mb-3">
-                            <b>Welcome to ResumeApp</b>
+                            <b>Welcome to ResuMé </b>
                         </div>
                     </v-col>
                     <v-col cols="12" >
-                        <div align="center" class="text-h4 mt-3 mb-3">
-                            Only 2% of resumes make it past the first round. Be in the top 2%. You do you!!!
+                        <div style="font-family: cursive;" align="center" class="text-h4 mt-3 mb-3">
+                            Only 2% of resumes shine through the piles of applications. Are you ready to be part of the elite few? 
                         </div>
                     </v-col>
                     <v-col cols="12" >
                         <div  class="text-body-1 text-center mt-3">
-                            Use professional field-tested resume templates that follow the exact 'resume rules' employers look for. Easy to use and done within minutes - try now for free!
+                            Use professional field-tested resume templates that follow the exact 'resume rules' employers look for.
+                            <p>Get Personalized Career Advice and Job Listings Suggestions tailored to fit your resume. </p>
+                            <p style="font-weight: 500;">"Be Authentic, Be You: Do You!"</p>
                         </div>
                     </v-col>
                     <v-col cols="12" >
